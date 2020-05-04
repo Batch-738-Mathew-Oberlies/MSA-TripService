@@ -8,12 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -76,7 +74,7 @@ public class LoggingAspect {
 				int status = response.getStatus();
 				HttpStatus statusDescription = HttpStatus.resolve(status);
 				if (result instanceof ArrayList) {
-					body = ((ArrayList) result).toString();
+					body = result.toString();
 				} else if (result != null) {
 					body = result.toString();
 				}
@@ -117,12 +115,9 @@ public class LoggingAspect {
 	private String getPayload() {
 		if (request == null) return "";
 		StringBuilder builder = new StringBuilder();
-		ServletInputStream stream = null;
 		BufferedReader reader = null;
 		try {
-			stream = request.getInputStream();
-			//Spring uses the reader elsewhere so we have to do a deep copy to not block it
-			reader = new BufferedReader(new InputStreamReader(stream));
+			reader = request.getReader();
 			String line;
 			while ((line = reader.readLine()) != null) {
 				builder.append(line);
@@ -138,7 +133,7 @@ public class LoggingAspect {
 		builder.append("[");
 		Enumeration<String> parameterNames = request.getParameterNames();
 		while (parameterNames.hasMoreElements()) {
-			String parameterName = parameterNames.nextElement().toString();
+			String parameterName = parameterNames.nextElement();
 			builder.append(String.format("%s: %s", parameterName, request.getParameter(parameterName)));
 			if (parameterNames.hasMoreElements()) {
 				builder.append(", ");
