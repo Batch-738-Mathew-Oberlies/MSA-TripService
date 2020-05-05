@@ -1,5 +1,5 @@
 package com.revature.rideshare.models;
 
 public enum TripStatus {
-    PAST, CURRENT, FUTURE
+	PAST, CURRENT, FUTURE
 }

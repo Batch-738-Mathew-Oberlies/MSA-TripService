@@ -1,19 +1,16 @@
 package com.revature.rideshare.services.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.revature.rideshare.models.Trip;
 import com.revature.rideshare.models.TripDTO;
 import com.revature.rideshare.models.TripStatus;
 import com.revature.rideshare.repositories.TripRepository;
 import com.revature.rideshare.services.TripService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TripServiceImpl implements TripService {
@@ -158,5 +155,10 @@ public class TripServiceImpl implements TripService {
     public String deleteTripById(int id) {
         tripRepository.deleteById(id);
         return "Trip with id: " + id + " was deleted.";
+    }
+
+    @Override
+    public List<Trip> getCurrentTrips() {
+        return tripRepository.getByTripStatus(TripStatus.CURRENT);
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,8 +25,8 @@ import java.util.Optional;
 @Validated
 @Api(tags = {"Trips"})
 public class TripController {
-    private TripService tripService;
-    private UserService userService;
+    private final TripService tripService;
+    private final UserService userService;
 
     @Autowired
     public TripController(TripService tripService, UserService userService) {
@@ -44,15 +45,18 @@ public class TripController {
     @GetMapping
     public ResponseEntity<List<TripDTO>> getTrips(
             @PositiveOrZero
-            @RequestParam(name = "offset", required = false)
-                    Integer offset
-    ) {
+            @RequestParam(name = "offset", required = false) Integer offset,
+            @RequestParam(name = "current", required = false) Boolean current) {
         List<TripDTO> trips;
-        if (offset != null) {
+        if (current != null && current) {
+            trips = new ArrayList<>();
+            List<Trip> tripList = tripService.getCurrentTrips();
+            for (Trip t : tripList)
+                trips.add(new TripDTO(t));
+        } else if (offset != null)
             trips = tripService.getTripsDTO(offset);
-        } else {
+        else
             trips = tripService.getTripsDTO();
-        }
 
         if (!trips.isEmpty()) return ResponseEntity.ok(trips);
 
